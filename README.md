@@ -40,13 +40,9 @@ _NT_MAKE_NAMED_PARAMETER_FUNCTION_(foo) //output function name for user to use
 _NT_FINISH_NAMED_PARAMETER_FUNCTION_(function_implementation::foo) //the implementation of the function
 
 //main.cpp
+
+//user usage:
 foo(3, ntarg_(d) = 3.4, ntarg_(c) = 5)
-
-//what the user may do:
-double a = 3.1415;
-foo_o(ntarg_(b) = 3.146, ntarg_(a) = a) += 10;
-std::cout << "a is now "<<a<<std::endl;
-
 ```
 
 This named parameters library also allows for function overloads using `_NT_OVERLOAD_PARAMETERS_`, templates using `_nt_auto_`, deduction of return type based on templates using `_nt_auto_return_`, and explictly convertible parameters using `_nt_convertible_`. Below is an example using all of these:
