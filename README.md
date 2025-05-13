@@ -9,7 +9,7 @@ This library is cross platform C++17 compatible. The design was based around a f
 
 The goal of this library is to have a fairly seamless use for users, and parameters can be used in any order. All that has to be included is `named_parameters.hpp`. Users may use functions as such:
 
-```
+```cpp
 //foo.h
 void foo(int a, int b, int c, double d);
 
@@ -20,7 +20,7 @@ foo(3, ntarg_(d) = 3.4, ntarg_(c) = 5)
 
 The setup to allow this to happen is fairly easy to implement from a developer standpoint.
 
-```
+```cpp
 //foo.h
 
 //it doesn't have to be in a namespace, it can be a different named function
@@ -51,7 +51,7 @@ std::cout << "a is now "<<a<<std::endl;
 
 This named parameters library also allows for function overloads using `_NT_OVERLOAD_PARAMETERS_`, templates using `_nt_auto_`, deduction of return type based on templates using `_nt_auto_return_`, and explictly convertible parameters using `_nt_convertible_`. Below is an example using all of these:
 
-```
+```cpp
 //foo.h
 
 namespace overloaded_functions{
@@ -88,7 +88,7 @@ foo(static_cast<int>(a),2,ntarg_(d)=a);
 
 The named parameters library also has a feature for class constructors to have named arguments:
 
-```
+```cpp
 //MaxPool2D.h
 
 //this is an example of the MaxPool2d class implementation in NeuroTensor:
@@ -139,7 +139,7 @@ The use of `ntarg_` is pretty simple, it takes the variable name `ntarg_(a)` is 
 
 When dealing with functions that have only one definition and are not overloaded, you can end the beggining construction that starts with `_NT_MAKE_NAMED_PARAMETER_FUNCTION_` that takes the argument of the outfunction name, with `_NT_FINISH_NAMED_PARAMETER_FUNCTION_` of where the function was originally defined. HoIver, when dealing with overloaded functions, you must end the definition with `_NT_OVERLOAD_NAMED_PARAMETER_FUNCTION_`, folloId by the name of the original function, and then `_NT_OVERLOAD_PARAMETERS_` for each of the potential overloaded functions.
 
-```
+```cpp
 //example:
 _NT_OVERLOAD_NAMED_PARAMETER_FUNCTION_(overloaded_namespace::foo,
                             _NT_OVERLOAD_PARAMETERS_(void, int, int, int, int),
@@ -166,7 +166,7 @@ Templates are a vital part of C++, and not being able to have functions with tem
 #### Using `_nt_auto_` 
 
 Take the two functions below:
-```
+```cpp
 int foo(int, int, double)
 
 template<typename T>
@@ -174,7 +174,7 @@ int foo(T&, int, double) //taking a reference to the template
 ```
 
 Their overload(s) would be:
-```
+```cpp
 _NT_OVERLOAD_NAMED_PARAMETER_FUNCTION_(foo,
                             _NT_OVERLOAD_PARAMETERS_(int, int, int, double),
                             _NT_OVERLOAD_PARAMETERS_(int, _nt_auto_&, int, double))
@@ -193,7 +193,7 @@ Many times, functions in C++ will return template arguments. If you are not work
 `_nt_auto_return_` takes a `constexpr std::size_t` variable, that tells the library which parameter is type is going to be returned. 
 
 For example:
-```
+```cpp
 int foo(int, int, double)
 template<typename T>
 T& foo(T&, int, double) //taking a reference to the typename T, and returning a reference to the typename T
@@ -201,7 +201,7 @@ T& foo(T&, int, double) //taking a reference to the typename T, and returning a 
 
 In the second `foo` overload, the typename `T` is retuend, and a reference to it is returned. Therefore, I know `T` is going to be defined as the first argument type, therefore the return type will be `_nt_auto_return_<0>`. I also know it is going to return a reference to the variable, therefore the return type will be `_nt_auto_return_<0>&`. This means the final overload will look like this:
 
-```
+```cpp
 _NT_OVERLOAD_NAMED_PARAMETER_FUNCTION_(foo,
                             _NT_OVERLOAD_PARAMETERS_(int, int, int, double),
                             _NT_OVERLOAD_PARAMETERS_(_nt_auto_return_<0>&, _nt_auto_&, int, double))
@@ -222,7 +222,7 @@ Some types are implictly meant to be converted into or constructed into. For exa
 
 This is a way to define a class constructor that can take named parameter arguments. 
 It defines two different constructors:
-```
+```cpp
 template<typename... Args>
 ClassName(Args&&...)
 
@@ -241,7 +241,7 @@ Using `_NT_NAMED_CLASS_CONSTRUCTOR_CLASS_DEFAULT_VALS_` and `_NT_NAMED_CLASS_CON
 
 Using the macro `_NT_MAKE_NAMED_ARGUMENT_CLASS_CONSTRUCTOR_` does not have native support for template arguments in the class definition. Instead, you would have to do something like this:
 
-```
+```cpp
 
 class MyClass{
     int a, b, c;
