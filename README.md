@@ -127,7 +127,7 @@ MaxPool2D pool({2,2}, ntarg_(padding) = {1,0}, ntarg_(dilation) = 2, ntarg_(retu
 
 Above shows general use cases. There are additional features and limitations outlined below. 
 
-### Definint Parameters `ntarg_`
+### Named Parameters Convention `ntarg_`
 
 The use of `ntarg_` is pretty simple, it takes the variable name `ntarg_(a)` is the parameter name `a` and then it can be set to the value using `ntarg_(a) = 10`.
 
