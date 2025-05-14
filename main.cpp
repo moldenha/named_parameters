@@ -57,7 +57,21 @@ public:
     }
 };
 
+class ExampleClass2 {
+    int a, b, c;
+    double d;
 
+public:
+    _NT_MAKE_NAMED_ARGUMENT_CLASS_CONSTRUCTOR_(ExampleClass2,
+        _NT_NAMED_CLASS_CONSTRUCTOR_CLASS_ARG_NAMES_(a, b, c, d),
+        _NT_NAMED_CLASS_CONSTRUCTOR_CLASS_DEFAULT_VALS_(),
+        _NT_NAMED_CLASS_CONSTRUCTOR_CLASS_ARG_TYPES_(int, int, int, double))
+    : a(a), b(b), c(c), d(d) {}
+
+    void print() {
+        std::cout << "A: " << a << " B: " << b << " C: " << c << " D: " << d << std::endl;
+    }
+};
 
 
 int main(){
@@ -73,6 +87,9 @@ int main(){
 
     ExampleClass cls(ntarg_(b) = 10.2, ntarg_(c) = 2, ntarg_(a) = 1, ntarg_(d) = 3.4);
     cls.print();
+    
+    ExampleClass2 cls2(ntarg_(b) = 10.2, ntarg_(c) = 2, ntarg_(a) = 1, ntarg_(d) = 3.4);
+    cls2.print();
     
     return 0;
 }
