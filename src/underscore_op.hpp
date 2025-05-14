@@ -116,6 +116,9 @@ template<char... Strs>
 struct _NT_StringLiteral_ {
     static constexpr std::size_t Size = sizeof...(Strs);
     
+    template<typename T>
+    using equal_op_type = __NT_EqualReflectOp__<T, Strs...>;
+
     template<std::size_t val>
     inline static constexpr char get_char(){
         static_assert(val < Size, "Getting char out of range");
