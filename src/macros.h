@@ -26,7 +26,9 @@
 #define _NT_GET_EQUAL_REFLECT_OP_17_(str) str.char_at(17), _NT_GET_EQUAL_REFLECT_OP_18_(str)
 #define _NT_GET_EQUAL_REFLECT_OP_18_(str) str.char_at(18), _NT_GET_EQUAL_REFLECT_OP_19_(str)
 #define _NT_GET_EQUAL_REFLECT_OP_19_(str) str.char_at(19), _NT_GET_EQUAL_REFLECT_OP_20_(str)
-#define _NT_GET_EQUAL_REFLECT_OP_20_(str) str.char_at(20)
+#define _NT_GET_EQUAL_REFLECT_OP_20_(str) str.char_at(20), _NT_GET_EQUAL_REFLECT_OP_21_(str)
+#define _NT_GET_EQUAL_REFLECT_OP_21_(str) str.char_at(21), _NT_GET_EQUAL_REFLECT_OP_22_(str) 
+#define _NT_GET_EQUAL_REFLECT_OP_22_(str) str.char_at(22)
 
 
 #define _NT_GET_EQUAL_REFLECT_SUB_OP_TO_LITERAL_(str) ::nt::named_arguments::_NT_StringLiteral_<_NT_GET_EQUAL_REFLECT_OP_0_(str)>{} 
