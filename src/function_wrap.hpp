@@ -21,7 +21,7 @@ struct _nt_args_are_well_formed_<Arg1, Arg2>{
 
 // Base case specialization when there's only one type.
 template<typename Arg1>
-struct _nt_args_are_well_formed_<Arg1, Arg1>{
+struct _nt_args_are_well_formed_<_NT_StringLiteral_<'h'>, Arg1>{
     static constexpr bool value = true;
 };
 
@@ -50,7 +50,7 @@ template<typename... Args>
 struct __NT_arg_holder__{
     static_assert(_nt_all_string_literals_<Args...>::value, "Expected all string literal types for args holder");
     static_assert(sizeof...(Args) > 0, "Expected to have multiple arguments for argument holder");
-    static_assert(_nt_args_are_well_formed_<Args...>::value, "Expected arguments to follow from non-default to default");
+    static_assert(sizeof...(Args) < 2 || _nt_args_are_well_formed_<_NT_StringLiteral_<'h'>, Args...>::value, "Expected arguments to follow from non-default to default");
     std::tuple<Args...> args;
     
     constexpr __NT_arg_holder__(Args&&... tup) : args(std::make_tuple(std::forward<Args>(tup)...)) {}
