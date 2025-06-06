@@ -56,7 +56,9 @@ def print_whole_make_ntarg_generate_macro(num):
     print("_NT_MAKE_NTARG_MACRO_0_)(__VA_ARGS__) ")
 
 
-def make_whole_file(filename, num):
+def make_whole_file(filename, num, num_b = None):
+    if(num_b == None):
+        num_b = num
     file = open(filename, 'w')
     original_stdout = sys.stdout
     sys.stdout = file
@@ -67,7 +69,7 @@ def make_whole_file(filename, num):
     print()
     print_reflect_constructor_macro(num)
     print_whole_make_ntarg_generate_macro(num)
-    print_whole_make_combination_out_macro(num)
+    print_whole_make_combination_out_macro(num_b)
     print()
     print()
     print()
@@ -77,6 +79,6 @@ def make_whole_file(filename, num):
 
 
 if __name__ == '__main__':
-    make_whole_file("expanded_class_constructor_macros.h", 100)
+    make_whole_file("expanded_class_constructor_macros.h", 100, 62) #62 keeps it below MSVC limit
 
 

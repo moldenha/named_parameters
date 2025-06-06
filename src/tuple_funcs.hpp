@@ -61,11 +61,23 @@ template <typename Tuple>
 using _nt_remove_first_tuple_type_t = typename _nt_remove_first_tuple_type_impl<Tuple>::type;
 
 
+namespace details{
+//std::__tuple_cat_return is only compatible for gcc
+//so instead I am using this:
+template<typename ... tuples_t>
+using nt__tuple_cat_return_t =
+decltype(std::tuple_cat(
+    std::declval<tuples_t>()...
+));
+
+
+}
+
 template<std::size_t N, typename n_type, typename Tuple>
-using _nt_replace_tuple_type_t = typename std::__tuple_cat_return<
+using _nt_replace_tuple_type_t = typename details::nt__tuple_cat_return_t<
                                         typename _nt_first_n_tuple_types_<N-1, Tuple>::type,
                                         std::tuple<n_type>,
-                                        typename _nt_last_tuple_types_from_start_<N+1, Tuple>::type>::type;
+                                        typename _nt_last_tuple_types_from_start_<N+1, Tuple>::type>;
 
 
 

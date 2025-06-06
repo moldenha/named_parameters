@@ -345,9 +345,9 @@ template<typename ArgHolder, typename Seq, typename Seq2, typename... Args>
 struct _nt_find_proper_function_arg_tuple_type_{
     static constexpr std::size_t Val1 = first_index_sequence_element(Seq2{}); 
     using type = typename std::conditional_t<Val1 >= ArgHolder::size,
-                    std::tuple<>,
-                    typename std::__tuple_cat_return<std::tuple<typename _nt_define_nth_tuple_reflect_type_<ArgHolder, Val1, Seq, Args...>::cur_type>,
-                                    typename _nt_find_proper_function_arg_tuple_type_<ArgHolder, Seq, remove_first_element_from_sequence_t<Seq2>, Args...>::type>::type >;
+                std::tuple<>,
+                typename details::nt__tuple_cat_return_t<std::tuple<typename _nt_define_nth_tuple_reflect_type_<ArgHolder, Val1, Seq, Args...>::cur_type>,
+                typename _nt_find_proper_function_arg_tuple_type_<ArgHolder, Seq, remove_first_element_from_sequence_t<Seq2>, Args...>::type> >;
     
 
 };
