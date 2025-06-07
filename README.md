@@ -266,7 +266,19 @@ This library does not rely on the trick of using `template <typename CharT, Char
 
 The only thing that is evaluated at compile time are the inputted arguments and the default arguments are not exclusively `constexpr`. HoIver, placement of arguments, function overloading, class constructing, and everything that goes into that is evaluated at compile time.
 
+## MSVC
 
+This library can be compiled to work with `clang`, `gnu`, and `MSVC` for `C++`. When compiling on `MSVC` the option `/Zc:preprocessor` needs to be turned on.
+
+### CMake
+
+If compiling using `CMake`, the following can be added to your `CMakeLists.txt` file, and named parameters will compile without any issues, this is only so that it will work and stay cross-platform compatible when using `MSVC`:
+
+```
+if (MSVC)
+    add_compile_options(/Zc:preprocessor)
+endif()
+```
 
 ## Contribution
 
