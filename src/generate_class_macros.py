@@ -79,6 +79,6 @@ def make_whole_file(filename, num, num_b = None):
 
 
 if __name__ == '__main__':
-    make_whole_file("expanded_class_constructor_macros.h", 100, 62) #62 keeps it below MSVC limit
+    make_whole_file("expanded_class_constructor_macros.h", 100) #62 keeps it below MSVC limit
 
 
