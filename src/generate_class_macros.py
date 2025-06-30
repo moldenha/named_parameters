@@ -1,7 +1,7 @@
 import sys
 
 def print_reflect_constructor_macro(num):
-    print("#define _NT_REFLECT_CONSTRUCTOR_SELECT_MACRO_(", end= '')
+    print("#define NT_REFLECT_CONSTRUCTOR_SELECT_MACRO_(", end= '')
     for i in range(num):
         print("_{}, ".format(i+1), end = '')
     print("NAME, ...) NAME")
@@ -9,7 +9,7 @@ def print_reflect_constructor_macro(num):
 
 
 def print_make_combination_out_macro(num):
-    print("#define _NT_COMBINE_NAMED_PARAMETER_AND_TYPE_MACRO_{}_(".format(num), end = '')
+    print("#define NT_COMBINE_NAMED_PARAMETER_AND_TYPE_MACRO_{}_(".format(num), end = '')
     if num == 0:
         print(")")
         return
@@ -26,16 +26,16 @@ def print_make_combination_out_macro(num):
 def print_whole_make_combination_out_macro(num):
     for i in range(num+1):
        print_make_combination_out_macro(i)
-    print("#define _NT_NTNAMED_ARGS_EXPAND_TYPES_FOR_CLASS_MACRO_(types_holder, names_holder) _NT_REFLECT_CONSTRUCTOR_SELECT_MACRO_(types_holder, ", end = '')
+    print("#define NTNTNAMED_ARGS_EXPAND_TYPES_FOR_CLASS_MACRO_(types_holder, names_holder) NT_REFLECT_CONSTRUCTOR_SELECT_MACRO_(types_holder, ", end = '')
     for i in reversed(range(num+1)):
         if i == 0: break
-        print("_NT_COMBINE_NAMED_PARAMETER_AND_TYPE_MACRO_{}_, ".format(i), end = '')
-    print("_NT_COMBINE_NAMED_PARAMETER_AND_TYPE_MACRO_0_)(types_holder, names_holder) ")
+        print("NT_COMBINE_NAMED_PARAMETER_AND_TYPE_MACRO_{}_, ".format(i), end = '')
+    print("NT_COMBINE_NAMED_PARAMETER_AND_TYPE_MACRO_0_)(types_holder, names_holder) ")
 
 
 
-def print_make_ntarg_generate_macro(num):
-    print("#define _NT_MAKE_NTARG_MACRO_{}_(".format(num), end = '')
+def print_makentarg_generate_macro(num):
+    print("#define NT_MAKENTARG_MACRO_{}_(".format(num), end = '')
     if num == 0:
         print(")")
         return
@@ -46,14 +46,14 @@ def print_make_ntarg_generate_macro(num):
         print("ntarg_(arg{}), ".format(i+1), end = '')
     print("ntarg_(arg{})".format(num))
 
-def print_whole_make_ntarg_generate_macro(num):
+def print_whole_makentarg_generate_macro(num):
     for i in range(num+1):
-        print_make_ntarg_generate_macro(i)
-    print("#define _NT_MAKE_NTARGS_MACRO_EXPAND_(...) _NT_REFLECT_CONSTRUCTOR_SELECT_MACRO_(__VA_ARGS__, ", end = '')
+        print_makentarg_generate_macro(i)
+    print("#define NT_MAKENTARGS_MACRO_EXPAND_(...) NT_REFLECT_CONSTRUCTOR_SELECT_MACRO_(__VA_ARGS__, ", end = '')
     for i in reversed(range(num+1)):
         if i == 0: break
-        print("_NT_MAKE_NTARG_MACRO_{}_, ".format(i), end = '')
-    print("_NT_MAKE_NTARG_MACRO_0_)(__VA_ARGS__) ")
+        print("NT_MAKENTARG_MACRO_{}_, ".format(i), end = '')
+    print("NT_MAKENTARG_MACRO_0_)(__VA_ARGS__) ")
 
 
 def make_whole_file(filename, num, num_b = None):
@@ -62,13 +62,13 @@ def make_whole_file(filename, num, num_b = None):
     file = open(filename, 'w')
     original_stdout = sys.stdout
     sys.stdout = file
-    print("#ifndef __NT_NAMED_ARGUMENT_PARAMETERS_EXPANDED_CLASS_CONSTRUCTOR_MACROS_H__") #starting the file
-    print("#define __NT_NAMED_ARGUMENT_PARAMETERS_EXPANDED_CLASS_CONSTRUCTOR_MACROS_H__")
+    print("#ifndef NT_NAMED_ARGUMENT_PARAMETERS_EXPANDED_CLASS_CONSTRUCTOR_MACROS_H__") #starting the file
+    print("#define NT_NAMED_ARGUMENT_PARAMETERS_EXPANDED_CLASS_CONSTRUCTOR_MACROS_H__")
     print()
     print()
     print()
     print_reflect_constructor_macro(num)
-    print_whole_make_ntarg_generate_macro(num)
+    print_whole_makentarg_generate_macro(num)
     print_whole_make_combination_out_macro(num_b)
     print()
     print()

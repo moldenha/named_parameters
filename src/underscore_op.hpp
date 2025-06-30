@@ -1,67 +1,32 @@
-#ifndef __NT_NAMED_ARGUMENT_PARAMETERS_UNDERSCORE_OP_HPP__
-#define __NT_NAMED_ARGUMENT_PARAMETERS_UNDERSCORE_OP_HPP__
+#ifndef NT_NAMED_ARGUMENT_PARAMETERS_UNDERSCORE_OP_HPP__
+#define NT_NAMED_ARGUMENT_PARAMETERS_UNDERSCORE_OP_HPP__
 #include <tuple>
 #include <optional>
 #include <type_traits>
 #include <iostream>
 #include <cstddef>
+#include "value_holder.hpp"
 
 namespace nt{
 namespace named_arguments{
 
 
-template<typename T, typename = void>
-struct __NT_EqualReflectOp_sub__{
-    using type = T;
-    const char* var_name;
-    std::size_t sz;
-    T&& var;
-
-    constexpr __NT_EqualReflectOp_sub__(const char* str, std::size_t len, T&& _var) : var_name(str), sz(len), var(std::forward<T>(_var)){}
-    inline constexpr std::size_t var_name_size() const {return sz;}
-    // template<std::size_t N>
-    // inline constexpr char get_at() const {
-    //     return N < sz ? var_name[N] : '\0';
-    // }
-
-    // Example: constexpr function to get a character (for demo purposes)
-    inline constexpr char char_at(std::size_t i) const {
-        return i < sz ? var_name[i] : '\0';
-    }
-};
-
-template<typename T>
-struct __NT_EqualReflectOp_sub__<T, typename std::enable_if<std::is_same_v<T, std::nullopt_t>>::type>{
-    using type = std::nullopt_t;
+// This is a struct purely to hold stringed values
+struct NT_EqualReflectOp_sub__{
     const char* var_name;  // points to the literal's characters (static storage)
     std::size_t sz;        // length of the literal (excluding null terminator)
     
 
     template<std::size_t N>
-    constexpr __NT_EqualReflectOp_sub__(const char(&a)[N]) : var_name(a), sz(N-1) {}
+    constexpr NT_EqualReflectOp_sub__(const char(&a)[N]) : var_name(a), sz(N-1) {}
     
     // constexpr constructor to allow compile-time initialization
-    constexpr __NT_EqualReflectOp_sub__(const char* str, std::size_t len)
+    constexpr NT_EqualReflectOp_sub__(const char* str, std::size_t len)
         : var_name(str), sz(len) { }
 
 
     inline constexpr std::size_t var_name_size() const { return sz; }
 
-
-    template<typename G>
-    inline constexpr __NT_EqualReflectOp_sub__<G> operator=(G&& element) const {
-        return __NT_EqualReflectOp_sub__<G>(var_name, sz, std::forward<G>(element));
-    }
-    
-    template<typename G>
-    inline constexpr __NT_EqualReflectOp_sub__<G> operator*(G&& element) const {
-        return __NT_EqualReflectOp_sub__<G>(var_name, sz, std::forward<G>(element));
-    }
-
-    // template<std::size_t N>
-    // constexpr char get_at() const {
-    //     return N < sz ? var_name[N] : '\0';
-    // }
 
     // Example: constexpr function to get a character (for demo purposes)
     inline constexpr char char_at(std::size_t i) const {
@@ -74,27 +39,28 @@ struct __NT_EqualReflectOp_sub__<T, typename std::enable_if<std::is_same_v<T, st
 
 
 template<char... Strs>
-struct _NT_StringLiteral_;
+struct NT_StringLiteral_;
 
 template<typename T, char... Strs>
-struct __NT_EqualReflectOp__{
+struct NT_EqualReflectOp__{
     using Type = T;
-    using LiteralType = _NT_StringLiteral_<Strs...>;
-    T&& val;
-    constexpr __NT_EqualReflectOp__(T&& _val) : val(std::forward<T>(_val)) {;}
-    inline static constexpr _NT_StringLiteral_<Strs...> literal() {return _NT_StringLiteral_<Strs...>{};}
+    using LiteralType = NT_StringLiteral_<Strs...>;
+    value_holder<T> val;
+    // T&& val;
+    constexpr NT_EqualReflectOp__(T&& _val) : val(std::forward<T>(_val)) {;}
+    inline static constexpr NT_StringLiteral_<Strs...> literal() {return NT_StringLiteral_<Strs...>{};}
     
     //static constexpr char* var_name() {return {Strs...};} 
     //the above causes an error, 
     //but it allows the class to be seen and is good for debugging
 
     template<typename G, char... Strs2>
-    constexpr bool operator==(const __NT_EqualReflectOp__<G, Strs...>&);
-    constexpr __NT_EqualReflectOp__(const __NT_EqualReflectOp__& v)
-    :val(std::forward<T>(const_cast<__NT_EqualReflectOp__&>(v).val)){}
+    constexpr bool operator==(const NT_EqualReflectOp__<G, Strs...>&);
+    constexpr NT_EqualReflectOp__(const NT_EqualReflectOp__& v)
+    :val(std::forward<T>(const_cast<NT_EqualReflectOp__&>(v).val.get())){}
 
-    inline constexpr __NT_EqualReflectOp__& operator=(T&& _val) {
-        val = std::forward<T>(_val);
+    inline constexpr NT_EqualReflectOp__& operator=(T&& _val) {
+        val = value_holder(std::forward<T>(_val));
         return *this;  // Return the current object instead of creating a new one
     }
 };
@@ -102,7 +68,7 @@ struct __NT_EqualReflectOp__{
 
 
 template<char c, char... Strs>
-inline constexpr _NT_StringLiteral_<Strs...> remove_char(){
+inline constexpr NT_StringLiteral_<Strs...> remove_char(){
     return {};
 }
 
@@ -113,11 +79,11 @@ inline constexpr char get_first_char(){
 
 
 template<char... Strs>
-struct _NT_StringLiteral_ {
+struct NT_StringLiteral_ {
     static constexpr std::size_t Size = sizeof...(Strs);
     
     template<typename T>
-    using equal_op_type = __NT_EqualReflectOp__<T, Strs...>;
+    using equal_op_type = NT_EqualReflectOp__<T, Strs...>;
 
     template<std::size_t val>
     inline static constexpr char get_char(){
@@ -131,29 +97,21 @@ struct _NT_StringLiteral_ {
     }
     
     template<char... Strs2>
-    inline constexpr bool operator==(_NT_StringLiteral_<Strs2...>) const {
-        if constexpr (sizeof...(Strs) != sizeof...(Strs2)){return false;}
-        if constexpr (sizeof...(Strs) == 0) return true;
-        else{
-            constexpr char c_1 = get_first_char<Strs...>();
-            constexpr char c_2 = get_first_char<Strs2...>();
-            if constexpr (c_1 != c_2) return false;
-            return remove_char<Strs...>() == remove_char<Strs2...>();
+    inline constexpr bool operator==(NT_StringLiteral_<Strs2...>) const {
+        if constexpr (sizeof...(Strs) != sizeof...(Strs2)){
+            return false;
+        }else{
+            return ((Strs == Strs2) && ...);
         }
     }
 
     template<char... Strs2>
-    inline static constexpr bool isEqual(_NT_StringLiteral_<Strs2...>){
-        if constexpr (sizeof...(Strs) != sizeof...(Strs2)){return false;}
-        if constexpr (sizeof...(Strs) == 0) return true;
-        else{
-            constexpr char c_1 = get_first_char<Strs...>();
-            constexpr char c_2 = get_first_char<Strs2...>();
-            if constexpr (c_1 != c_2) return false;
-            constexpr auto _na = remove_char<Strs...>();
-            constexpr auto _nb = remove_char<Strs2...>();
-            return decltype(_na)::isEqual(decltype(_nb){});
-        } 
+    inline static constexpr bool isEqual(NT_StringLiteral_<Strs2...>){
+        if constexpr (sizeof...(Strs) != sizeof...(Strs2)){
+            return false;
+        }else{
+            return ((Strs == Strs2) && ...);
+        }
     }
 
     //static constexpr char* var_name() {return {Strs...};} 
@@ -161,12 +119,17 @@ struct _NT_StringLiteral_ {
     //but it allows the class to be seen and is good for debugging
 
     template<typename T2>
-    inline constexpr __NT_EqualReflectOp__<T2, Strs...> operator=(T2&& val2) {
-        return __NT_EqualReflectOp__<T2, Strs...>(std::forward<T2>(val2));
+    inline constexpr NT_EqualReflectOp__<T2, Strs...> operator=(T2&& val2) const& {
+        return NT_EqualReflectOp__<T2, Strs...>(std::forward<T2>(val2));
+    }
+    
+    template<typename T2>
+    inline constexpr NT_EqualReflectOp__<std::initializer_list<T2>, Strs...> operator=(std::initializer_list<T2>&& ls) const& {
+        return NT_EqualReflectOp__<std::initializer_list<T2>, Strs...>(std::forward<std::initializer_list<T2>>(ls));
     }
 
     template<char nChar>
-    using add_char_type = _NT_StringLiteral_<Strs..., nChar>;
+    using add_char_type = NT_StringLiteral_<Strs..., nChar>;
 
 };
 
@@ -174,53 +137,87 @@ struct _NT_StringLiteral_ {
 
 template<typename T, char... Strs>
 template<typename G, char... Strs2>
-inline constexpr bool __NT_EqualReflectOp__<T, Strs...>::operator==(const __NT_EqualReflectOp__<G, Strs...>& other){
+inline constexpr bool NT_EqualReflectOp__<T, Strs...>::operator==(const NT_EqualReflectOp__<G, Strs...>& other){
     return std::is_same_v<G, T> && this->literal() == other.literal();
 }
 
 
 
 template <typename T>
-struct is__NT_EqualReflectOp__ : std::false_type {};
+struct isNT_EqualReflectOp__ : std::false_type {};
 
 template <typename T, char... Chars>
-struct is__NT_EqualReflectOp__<__NT_EqualReflectOp__<T, Chars...>> : std::true_type {};
+struct isNT_EqualReflectOp__<NT_EqualReflectOp__<T, Chars...>> : std::true_type {};
 
 // Helper variable template to make it easier to check
 template <typename T>
-inline constexpr bool __NT_IsEqualReflectOp__V = is__NT_EqualReflectOp__<std::remove_cv_t<std::remove_reference_t<T>>>::value;
+inline constexpr bool NT_IsEqualReflectOp__V = isNT_EqualReflectOp__<std::remove_cv_t<std::remove_reference_t<T>>>::value;
+
+template<typename Arg, typename... Args>
+struct is_allNT_EqualReflectOp__{
+    static constexpr bool value = NT_IsEqualReflectOp__V<Arg> && is_allNT_EqualReflectOp__<Args...>::value; 
+};
+
+template<typename Arg>
+struct is_allNT_EqualReflectOp__<Arg>{
+    static constexpr bool value = (NT_IsEqualReflectOp__V<Arg>);
+};
+template<>
+struct is_allNT_EqualReflectOp__<NT_StringLiteral_<'h'>>{
+    static constexpr bool value = true;
+};
+
 
 template<typename T>
-struct is_nt_string_literal : std::false_type {};
+struct isnt_string_literal : std::false_type {};
 
 template<char... Chars>
-struct is_nt_string_literal<_NT_StringLiteral_<Chars...> > : std::true_type{};
+struct isnt_string_literal<NT_StringLiteral_<Chars...> > : std::true_type{};
 
 template<typename T>
-inline constexpr bool is_nt_string_literal_v = is_nt_string_literal<std::remove_cv_t<std::remove_reference_t<T>>>::value; 
+inline constexpr bool isnt_string_literal_v = isnt_string_literal<std::remove_cv_t<std::remove_reference_t<T>>>::value; 
 
 
 
 template<typename Arg, typename... Args>
-struct _nt_all_string_literals_{
-    static constexpr bool value = (is_nt_string_literal_v<Arg> || __NT_IsEqualReflectOp__V<Arg>) && _nt_all_string_literals_<Args...>::value; 
+struct nt_all_string_literals_{
+    static constexpr bool value = (isnt_string_literal_v<Arg> || NT_IsEqualReflectOp__V<Arg>) && nt_all_string_literals_<Args...>::value; 
 };
 
 template<typename Arg>
-struct _nt_all_string_literals_<Arg>{
-    static constexpr bool value = (is_nt_string_literal_v<Arg> || __NT_IsEqualReflectOp__V<Arg>);
+struct nt_all_string_literals_<Arg>{
+    static constexpr bool value = (isnt_string_literal_v<Arg> || NT_IsEqualReflectOp__V<Arg>);
 };
 template<>
-struct _nt_all_string_literals_<_NT_StringLiteral_<'h'>>{
+struct nt_all_string_literals_<NT_StringLiteral_<'h'>>{
     static constexpr bool value = true;
 };
 
 }}
 //::nt::named_arguments
 
+
+//this is a namespace containing all of the functions needed to make a one-line constexpr literal string
+//of any size that is cross-platform
+namespace nt::named_arguments::expand_details{
+// Helper: Expands an integer_sequence into a lambda
+template<typename F, typename T, T... Is>
+inline constexpr auto expand_sequence_to_lambda(F&& f, std::integer_sequence<T, Is...>) {
+    return f(std::integral_constant<T, Is>{}...);
+}
+
+template<std::size_t N>
+inline constexpr std::size_t string_literal_size(const char (&)[N]) {
+    return N - 1;  // exclude null terminator
+}
+
+}
+//::nt::named_arguments::expand_details
+
+
 // User-defined literal operator (works for any length string literal)
-constexpr auto operator""_literal_function_argument_ntarg(const char* __str, std::size_t __len) {
-    return ::nt::named_arguments::__NT_EqualReflectOp_sub__<std::nullopt_t>{__str, __len};
+constexpr auto operator""_literal_function_argumentntarg(const char* __str, std::size_t __len) {
+    return ::nt::named_arguments::NT_EqualReflectOp_sub__{__str, __len};
 }
 
 #endif

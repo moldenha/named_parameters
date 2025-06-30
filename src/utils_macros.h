@@ -1,0 +1,7 @@
+#ifndef NT_NAMED_ARGUMENTS_GENERAL_MACROS_H__
+#define NT_NAMED_ARGUMENTS_GENERAL_MACROS_H__
+
+#define NT_NAMED_ARGUMENTS_CONCAT_(a, b) a##b
+#define NT_EXPAND(...) __VA_ARGS__
+
+#endif
